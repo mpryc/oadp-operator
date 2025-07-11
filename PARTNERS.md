@@ -15,9 +15,10 @@ better stability and maintainability.
 | 4.16              | 1.4          | v1.14          | released                      | 
 | 4.17              | 1.4          | v1.14          | released                      |
 | 4.18              | 1.4          | v1.14          | released                      |
-| 4.19              | 1.5          | v1.16          | Q2 2025                       |
-| 4.20              | 1.5          | v1.16          | Q4 2025                       |
+| 4.19              | 1.5          | v1.16          | released                      |
+| 4.20              | 1.5          | v1.16          | released                      |
 | 4.21              | 1.6          | v1.18          | Q1 2026                       |
+| 4.22              | 1.6          | v1.18          | Q3 2026                       |
 
 ### OADP Plugins of interest
 | OpenShift Version | OADP Version | Velero Version | kubevirt-velero-plugin | hypershift-oadp-plugin   | channel               |
@@ -30,6 +31,7 @@ better stability and maintainability.
 |  4.19             | 1.5          | v1.16          | v0.8                   | oadp-1.5                 | stable                |
 |  4.20             | 1.5          | v1.16          | v0.8                   | oadp-1.5                 | stable                |
 |  4.21             | 1.6          | v1.18          | v0.9                   | oadp-1.6                 | stable                |
+|  4.22             | 1.6          | v1.18          | v0.9                   | oadp-1.6                 | stable                |
 
 
 * [1] Release timelines are estimates,and versions are subject to change.
@@ -54,6 +56,13 @@ to their target OpenShift version
 - [Red Hat Partner Program](https://connect.redhat.com/)
 - [Contact Red Hat Support](https://access.redhat.com/support)
 
+
+## Critical Recent Changes to OADP and Velero
+ - In Velero the uploader type "restic" was [deprecated on July 31, 2024](https://github.com/vmware-tanzu/velero/issues/8072)
+   - Velero v1.17 will [REMOVE support for restic as a valid uploader type for backups](https://github.com/vmware-tanzu/velero/pull/9069). This change will impact OADP-1.6.0 the next major release of OADP.
+   - FSBackup with restic will NOT be possible in new backups.
+   - Restores from restic backups will be supported for at least another two Velero versions.
+   - The Velero community has provided a comparison of restic and kopia as utlized by Velero [here](https://github.com/user-attachments/files/21123755/Copy.of.kopia-restic-comparison.docx.pdf)
 
 ## Upgrade workflow
 ### Automatic upgrade: 
