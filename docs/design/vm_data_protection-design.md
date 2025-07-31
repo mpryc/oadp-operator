@@ -168,7 +168,7 @@ There are three distinct types of credentials involved in the system:
    The user uses the Kopia compatible CLI inside the VM to connect to the Kopia server (Backup Service) running in the cluster. This step establishes a trusted session and configures the local Kopia client to communicate with the remote repository.
 
 2. **Perform Backup**  
-   Once connected, the user initiates a backup by running the `vmdp backup create /path/to/backup` command (or similar), specifying the files or directories to back up. Kopia scans the specified paths, deduplicates data, encrypts it, and uploads the backup to the repository via the backup server. The backup operation can be repeated as needed, and incremental backups are supported by default. All the encryption of files and folders happens on the client side inside the VM.
+   Once connected, the user initiates a backup by running the `vmdp backup create /path/to/file_to_backup` command (or similar), specifying the files or directories to back up. Kopia scans the specified paths, deduplicates data, encrypts it, and uploads the backup to the repository via the backup server. The backup operation can be repeated as needed, and incremental backups are supported by default. All the encryption of files and folders happens on the client side inside the VM.
 
 3. **Session Persistence**
    The connection and authentication information is typically cached locally (e.g., in the user's Kopia config directory), so future backup or restore operations do not require re-authentication unless the session is reset, credentials change or config files deleted.
