@@ -300,32 +300,46 @@ func main() {
 	//+kubebuilder:scaffold:builder
 
 	// Add CLI/VMDP download setup runnables.
-	// Skip when namespace-scoped mode is off or the ConsoleCLIDownload CRD
-	// is absent (clusters without Console capability, e.g. SNO).
+	// Each server is gated by its own toggle (env var from the cli-download-config ConfigMap).
+	// Both default to disabled to avoid deploying workload pods that fail Red Hat
+	// certification checks (ServiceAccount, NetworkPolicy, RoleBinding in non-workload NS).
+	// To enable, set cli-download-enabled / vmdp-download-enabled to "true" in the
+	// openshift-adp-cli-download-config ConfigMap.
+	cliEnabled := os.Getenv("CLI_DOWNLOAD_ENABLED") == "true"
+	vmdpEnabled := os.Getenv("VMDP_DOWNLOAD_ENABLED") == "true"
+
 	if watchNamespace == "" {
 		setupLog.Info("Skipping CLI and VMDP download setup - watchNamespace not set")
+	} else if !cliEnabled && !vmdpEnabled {
+		setupLog.Info("CLI and VMDP download servers are disabled (set cli-download-enabled/vmdp-download-enabled in cli-download-config ConfigMap to enable)")
 	} else if available, err := controller.IsConsoleCRDAvailable(mgr.GetRESTMapper(), setupLog); !available {
 		if err != nil {
 			setupLog.Error(err, "unable to check ConsoleCLIDownload CRD availability, skipping CLI/VMDP download setup")
 		}
 	} else {
-		if err := mgr.Add(&controller.CLIDownloadSetup{
-			Client:            mgr.GetClient(),
-			Namespace:         watchNamespace,
-			OperatorName:      "openshift-adp-controller-manager",
-			OperatorNamespace: watchNamespace,
-		}); err != nil {
-			setupLog.Error(err, "unable to add CLI download setup")
-			os.Exit(1)
+		if cliEnabled {
+			if err := mgr.Add(&controller.CLIDownloadSetup{
+				Client:            mgr.GetClient(),
+				Namespace:         watchNamespace,
+				OperatorName:      "openshift-adp-controller-manager",
+				OperatorNamespace: watchNamespace,
+			}); err != nil {
+				setupLog.Error(err, "unable to add CLI download setup")
+				os.Exit(1)
+			}
+			setupLog.Info("CLI download server enabled")
 		}
-		if err := mgr.Add(&controller.VMDPDownloadSetup{
-			Client:            mgr.GetClient(),
-			Namespace:         watchNamespace,
-			OperatorName:      "openshift-adp-controller-manager",
-			OperatorNamespace: watchNamespace,
-		}); err != nil {
-			setupLog.Error(err, "unable to add VMDP download setup")
-			os.Exit(1)
+		if vmdpEnabled {
+			if err := mgr.Add(&controller.VMDPDownloadSetup{
+				Client:            mgr.GetClient(),
+				Namespace:         watchNamespace,
+				OperatorName:      "openshift-adp-controller-manager",
+				OperatorNamespace: watchNamespace,
+			}); err != nil {
+				setupLog.Error(err, "unable to add VMDP download setup")
+				os.Exit(1)
+			}
+			setupLog.Info("VMDP download server enabled")
 		}
 	}
 

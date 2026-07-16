@@ -6,3 +6,10 @@ images:
 - name: controller
   newName: quay.io/konveyor/oadp-operator
   newTag: latest
+configMapGenerator:
+- name: cli-download-config
+  literals:
+  - cli-download-enabled=false
+  - vmdp-download-enabled=false
+generatorOptions:
+  disableNameSuffixHash: true
